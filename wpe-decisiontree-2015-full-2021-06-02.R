@@ -1,7 +1,7 @@
 # 2015 Predicted Woody Cover and Biophysical Variable Decision Tree-rpart engine
 # Austin Rutherford
 # arutherford@email.arizona.edu
-# 2021-06-02
+# 2021-06-024
 
 # Load packages
 library(tidyverse)
@@ -111,16 +111,16 @@ clusterEvalQ(cl, library(tidymodels))
 registerDoParallel(cl)
 
 # Run rpart decision tree models to tune hyperparameters
-rpart_fit_results <- tune_grid(pwc_wflow, 
-                            resamples = folds,
-                            grid = rpart_tune_grid,
-                            metrics = metric_set(rsq, mae, rmse))
+# rpart_fit_results <- tune_grid(pwc_wflow, 
+#                             resamples = folds,
+#                             grid = rpart_tune_grid,
+#                             metrics = metric_set(rsq, mae, rmse))
 
 # Save an RDS file for future use if needed, save that memory
-saveRDS(rpart_fit_results, "./rpart_rds/first_model_dectree_full.rds")
+#saveRDS(rpart_fit_results, "./rpart_rds/first_model_dectree_full.rds")
 
 # Load RDS
-#rpart_fit_results <- readRDS("./rpart_rds/first_model_dectree_full.rds")
+rpart_fit_results <- readRDS("./rpart_rds/first_model_dectree_full.rds")
 
 # Graphs rmse for all min_n
 rpart_param_plot <- rpart_fit_results %>%
@@ -137,7 +137,7 @@ rpart_param_plot <- rpart_fit_results %>%
 
 rpart_param_plot
 
-ggsave('Graphs/rpart_param_plot.png', plot = rpart_param_plot)
+#ggsave('Graphs/rpart_param_plot.png', plot = rpart_param_plot)
 
 # Look at best decision tree models based on the Mean Absolute Error (and/or RMSE)
 show_best(rpart_fit_results, metric = "mae")
@@ -150,13 +150,16 @@ rpart_grid_update <- grid_regular(
   levels = 16)
 
 # Tune decision tree with targets min_n and tree depth ranges
-rpart_fit_update <- tune_grid(pwc_wflow, 
-                           resamples = folds,
-                           grid = rpart_grid_update,
-                           metrics = metric_set(rmse, mae, rsq))
+# rpart_fit_update <- tune_grid(pwc_wflow, 
+#                            resamples = folds,
+#                            grid = rpart_grid_update,
+#                            metrics = metric_set(rmse, mae, rsq))
 
 # Save an RDS file for future use if needed, save that memory
-saveRDS(rpart_fit_update, "./rpart_rds/final_model_dectree_full.rds")
+#saveRDS(rpart_fit_update, "./rpart_rds/final_model_dectree_full.rds")
+
+# Load RDS
+rpart_fit_update <- readRDS("./rpart_rds/final_model_dectree_full.rds")
 
 # Graphs rmse for targeted mtry and min_n
 rpart_param_plot_tune <- rpart_fit_update  %>%
@@ -170,7 +173,7 @@ rpart_param_plot_tune <- rpart_fit_update  %>%
 
 rpart_param_plot_tune
 
-ggsave('Graphs/rpart_param_plot_tune.png', plot = rpart_param_plot_tune)
+#ggsave('Graphs/rpart_param_plot_tune.png', plot = rpart_param_plot_tune)
 
 # Pick the best set of hyperparameters
 show_best(rpart_fit_update, metric = "rmse")
@@ -189,7 +192,7 @@ pwc_vip <- final_rpart %>%
 
 pwc_vip
 
-ggsave('Graphs/pwc_vip_31.png', plot = pwc_vip)
+#ggsave('Graphs/pwc_vip_31.png', plot = pwc_vip)
 
 # Finalize Workflow
 final_wf <- workflow() %>%
@@ -212,7 +215,10 @@ final_res %>%
   collect_metrics()
 
 # Save an RDS file for future use if needed, save that memory
-saveRDS(final_res, "./rpart_rds/final_model_dectree_full_tuned.rds")
+#saveRDS(final_res, "./rpart_rds/final_model_dectree_full_tuned.rds")
+
+# Load RDS
+final_res <- readRDS("./rpart_rds/final_model_dectree_full_tuned.rds")
 
 # Compare predicted pwc values to test pwc
 final_res %>% 
@@ -238,7 +244,7 @@ rpart_plot <- final_res %>%
 rpart_plot
 
 # Save comparison plot of full decision tree model
-ggsave('Graphs/DecTree_Model_Full.png', plot = rpart_plot)
+#ggsave('Graphs/DecTree_Model_Full.png', plot = rpart_plot)
 
 ### Variable Selection based on VIP/Impurity, create new/small model ###
 # Limit the number of predictors to the top 9 based on full model impurity, excluding spatial data for mapping later
@@ -274,13 +280,16 @@ rpart_grid_small <- grid_regular(
   levels = 9)
 
 # Tune small decision tree model with targets min_n and mtry
-rpart_fit_small <- tune_grid(final_wf_small, 
-                          resamples = folds,
-                          grid = rpart_grid_small,
-                          metrics = metric_set(rmse, mae, rsq))
+# rpart_fit_small <- tune_grid(final_wf_small, 
+#                           resamples = folds,
+#                           grid = rpart_grid_small,
+#                           metrics = metric_set(rmse, mae, rsq))
 
 # Save an RDS file for future use if needed, save that memory
-saveRDS(rpart_fit_small, "./rpart_rds/first_model_dectree_small.rds")
+#saveRDS(rpart_fit_small, "./rpart_rds/first_model_dectree_small.rds")
+
+# Load RDS
+rpart_fit_small <- readRDS("./rpart_rds/first_model_dectree_small.rds")
 
 # Graphs rmse for targeted mtry and min_n using small decision tree model
 rpart_param_plot_small <- rpart_fit_small  %>%
@@ -294,7 +303,7 @@ rpart_param_plot_small <- rpart_fit_small  %>%
 
 rpart_param_plot_small
 
-ggsave('Graphs/rpart_param_plot_small.png', plot = rpart_param_plot_small)
+#ggsave('Graphs/rpart_param_plot_small.png', plot = rpart_param_plot_small)
 
 # Pick the best set of hyperparameters
 show_best(rpart_fit_small, metric = "mae")
@@ -318,7 +327,7 @@ pwc_vip_small <- final_rpart_small %>%
 pwc_vip_small
 
 # Save VIP plot of the small/9 variable decision tree model
-ggsave('Graphs/pwc_vip_9.png', plot = pwc_vip_small)
+#ggsave('Graphs/pwc_vip_9.png', plot = pwc_vip_small)
 
 # Finalize Workflow with 9 predictors
 final_wf_small <- workflow() %>%
@@ -334,7 +343,10 @@ final_res_small %>%
   collect_metrics()
 
 # Save the RDS file for further use, save that memory
-saveRDS(final_res_small, "./rpart_rds/final_model_dectree_small.rds")
+#saveRDS(final_res_small, "./rpart_rds/final_model_dectree_small.rds")
+
+# Load RDS
+final_res_small<- readRDS("./rpart_rds/final_model_dectree_small.rds")
 
 # Compare predicted pwc values to test pwc
 final_res_small %>% 
@@ -360,64 +372,64 @@ rpart_plot_small <- final_res_small %>%
 rpart_plot_small
 
 # Save comparison plot of small/9 variable decision tree model
-ggsave('Graphs/DecTree_Model_Small.png', plot = rpart_plot_small)
+#ggsave('Graphs/DecTree_Model_Small.png', plot = rpart_plot_small)
 
 
 # Apply decision tree model to create predictions on full raster
-
+### Below only needed if using prediction, commenting out because pred aren't great but keeping code just in case ###
 # # Load RDS file if need to shut down R
 #rpart_fit_small_last <- readRDS("./rpart_rds/final_model_dectree_small.rds")
 
-rpart_fit_small_last_pred <- as.data.frame(rpart_fit_small_last$.predictions)
-
-# Apply recipe preprocessing to training data
-pwc_full_prep <- prep(pwc_rec, training = pwc_samps) # preps data, applies recipe
-
-# Run (bake) prepped preprocessng to training data to see the number of final dummy variables
-pwc_full_baked <- bake(pwc_prepped, new_data = pwc_samps)
-
-# take final (best) decision tree model, run on VIPs with baked (recipe applied) full dataset
-rpart_mod_pred <- final_rpart %>% 
-  fit(pwc ~ elevation + clay + aspect + fallsum + fallmean + wintersum + wintermean + slope + washdist,
-      data = pwc_full_baked)
-
-# Save the RDS file for further use, save that memory
-saveRDS(rpart_mod_pred, "./rpart_rds/pred_model_dectree_small.rds")
-
-# look at fit
-rpart_mod_pred$fit
-
-# look at the predictions
-rpart_mod_pred$fit$predictions
-
-# look at variable importance based on GINI impurity
-rpart_mod_pred$fit$variable.importance
-
-# create new table with only point, easting, northing, original pwc, and predicted pwc
-pwc_small_rpart_comb <- pwc_samps %>% 
-  mutate(pred = rpart_mod_pred$fit$predictions) %>% 
-  dplyr::select(point, easting, northing, pwc, pred) %>% 
-  rename(predicted_pwc = pred)
-
-# look at good of fit between predicted and original pwc values
-pwc_small_rpart_comb %>% 
-  ggplot(aes(100*pwc, 100*predicted_pwc)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  labs(y = 'Decision Trees Predicted Woody Cover (%)', x = 'Landsat NDVI Predicted Woody Cover (%)') +
-  ylim(c(0, 60))+
-  xlim(c(0, 80))+
-  scale_color_manual(values = c("gray80", "darkred"))+
-  geom_abline(intercept = 0, slope = 1, color = "blue", size = 1)+
-  stat_smooth(method = "lm", formula = y ~ x, color = "red")+
-  ggpmisc::stat_poly_eq(formula = y ~ x, 
-                        aes(label =  paste(stat(eq.label),
-                                           stat(rr.label), stat(p.value.label), sep = "*\", \"*")),
-                        parse = TRUE)+
-  theme_bw()
-
-
-# write the original and predicted pwc values to new .csv
-write_csv(pwc_small_rpart_comb, path = "Data/rpart_model_pred.csv")
+# rpart_fit_small_last_pred <- as.data.frame(rpart_fit_small_last$.predictions)
+# 
+# # Apply recipe preprocessing to training data
+# pwc_full_prep <- prep(pwc_rec, training = pwc_samps) # preps data, applies recipe
+# 
+# # Run (bake) prepped preprocessng to training data to see the number of final dummy variables
+# pwc_full_baked <- bake(pwc_prepped, new_data = pwc_samps)
+# 
+# # take final (best) decision tree model, run on VIPs with baked (recipe applied) full dataset
+# rpart_mod_pred <- final_rpart %>% 
+#   fit(pwc ~ elevation + clay + aspect + fallsum + fallmean + wintersum + wintermean + slope + washdist,
+#       data = pwc_full_baked)
+# 
+# # Save the RDS file for further use, save that memory
+# saveRDS(rpart_mod_pred, "./rpart_rds/pred_model_dectree_small.rds")
+# 
+# # look at fit
+# rpart_mod_pred$fit
+# 
+# # look at the predictions
+# rpart_mod_pred$fit$predictions
+# 
+# # look at variable importance based on GINI impurity
+# rpart_mod_pred$fit$variable.importance
+# 
+# # create new table with only point, easting, northing, original pwc, and predicted pwc
+# pwc_small_rpart_comb <- pwc_samps %>% 
+#   mutate(pred = rpart_mod_pred$fit$predictions) %>% 
+#   dplyr::select(point, easting, northing, pwc, pred) %>% 
+#   rename(predicted_pwc = pred)
+# 
+# # look at good of fit between predicted and original pwc values
+# pwc_small_rpart_comb %>% 
+#   ggplot(aes(100*pwc, 100*predicted_pwc)) +
+#   geom_point(size = 0.5, alpha = 0.5) +
+#   labs(y = 'Decision Trees Predicted Woody Cover (%)', x = 'Landsat NDVI Predicted Woody Cover (%)') +
+#   ylim(c(0, 60))+
+#   xlim(c(0, 80))+
+#   scale_color_manual(values = c("gray80", "darkred"))+
+#   geom_abline(intercept = 0, slope = 1, color = "blue", size = 1)+
+#   stat_smooth(method = "lm", formula = y ~ x, color = "red")+
+#   ggpmisc::stat_poly_eq(formula = y ~ x, 
+#                         aes(label =  paste(stat(eq.label),
+#                                            stat(rr.label), stat(p.value.label), sep = "*\", \"*")),
+#                         parse = TRUE)+
+#   theme_bw()
+# 
+# 
+# # write the original and predicted pwc values to new .csv
+# write_csv(pwc_small_rpart_comb, path = "Data/rpart_model_pred.csv")
 
 # Stop the cluster/parallel processing
 stopCluster(cl)
